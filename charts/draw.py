@@ -82,9 +82,9 @@ def plot_box(input_csv, chart_name, x_col_index, y_col_index):
 # 全天数据
 plot_box("./out/SyncProgressDiff.csv", "SyncProgressDiff", 0, 3)
 plot_box("./out/MemPoolRefreshRate.csv", "MemPoolRefreshRate", 1, 3)
-plot_line("./out/TxSyncCompleteTimeCost.csv", "TxSyncCompleteTimeCost", 1, 3)
-plot_line("./out/SyncTaskBacklog.csv", "SyncTaskBacklog", 0, 1)
-plot_line("./out/MineWork.csv", "MineWork", 0, 1)
+plot_box("./out/TxSyncCompleteTimeCost.csv", "TxSyncCompleteTimeCost", 1, 3)
+plot_box("./out/SyncTaskBacklog.csv", "SyncTaskBacklog", 0, 1)
+plot_box("./out/MineWork.csv", "MineWork", 0, 1)
 
 # # 少量数据
 # plot_box("./out/short/SyncProgressDiff.csv","SyncProgressDiff_short", 0, 3)

@@ -1,33 +1,6 @@
-# import pandas as pd
-# import matplotlib.pyplot as plt
-
-# # 读取 CSV 文件
-# csv_file = "output.csv"
-# df = pd.read_csv(csv_file)
-
-# # 确保时间戳列转换为 datetime 类型（如果需要）
-# df.iloc[:, 0] = pd.to_datetime(df.iloc[:, 0])
-
-# # 绘制图表
-# plt.figure(figsize=(12, 6))
-# plt.plot(df.iloc[:, 0], df.iloc[:, 3], marker='o', linestyle='-', color='b', label="Diff")
-
-# # 设置横轴格式
-# plt.xlabel("Timestamp")
-# plt.ylabel("Diff")
-# plt.title("Timestamp vs Diff")
-# plt.xticks(rotation=45)
-# plt.legend()
-# plt.grid()
-
-# # 保存图表
-# plt.savefig("sync_diff.png")
-# plt.show()
-
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
-
+import numpy as np
 
 # 折线图
 def plot_line(input_csv, chart_name, x_col_index, y_col_index):
@@ -39,7 +12,6 @@ def plot_line(input_csv, chart_name, x_col_index, y_col_index):
 
     # 绘制图表
     plt.figure(figsize=(12, 6))
-    # plt.plot(df.iloc[:, x_col_index], df.iloc[:, y_col_index], marker='o', linestyle='-', color='b', label=df.columns[y_col_index])
     plt.plot(
         df.iloc[:, x_col_index], df.iloc[:, y_col_index], linestyle="-", linewidth=0.5, color="b", label=df.columns[y_col_index]
     )
@@ -56,28 +28,69 @@ def plot_line(input_csv, chart_name, x_col_index, y_col_index):
     plt.savefig(f"./out/{chart_name}.png")
     plt.show()
 
-
-# 箱型图
+# 自定义箱型图（只显示四分位数信息）
 def plot_box(input_csv, chart_name, x_col_index, y_col_index):
-    # 读取 CSV 文件（假设有 4 列）
+    # 读取 CSV 文件
     df = pd.read_csv(input_csv, parse_dates=[x_col_index])
 
     # 提取小时
     df["Hour"] = df[df.columns[x_col_index]].dt.hour
-
-    # 画箱型图，使用最后一列 'Value'
+    
+    # 准备图表
     plt.figure(figsize=(12, 6))
-    sns.boxplot(x="Hour", y=df.columns[y_col_index], data=df)
-
+    
+    # 按小时分组并计算统计量
+    hours = sorted(df["Hour"].unique())
+    stats_data = []
+    
+    for hour in hours:
+        hour_data = df[df["Hour"] == hour][df.columns[y_col_index]]
+        if not hour_data.empty:
+            # 计算简单的四分位数统计
+            min_val = hour_data.min()
+            q1 = hour_data.quantile(0.25)
+            median = hour_data.median()
+            q3 = hour_data.quantile(0.75)
+            max_val = hour_data.max()
+            stats_data.append([hour, min_val, q1, median, q3, max_val])
+    
+    stats_df = pd.DataFrame(stats_data, columns=["Hour", "Min", "Q1", "Median", "Q3", "Max"])
+    
+    # 绘制自定义箱型图
+    for i, row in stats_df.iterrows():
+        # 箱体（Q1-Q3）
+        plt.fill_between([row["Hour"]-0.3, row["Hour"]+0.3], [row["Q1"], row["Q1"]], 
+                         [row["Q3"], row["Q3"]], color='skyblue', alpha=0.8)
+        
+        # 中位线
+        plt.plot([row["Hour"]-0.3, row["Hour"]+0.3], [row["Median"], row["Median"]], 'r', linewidth=2)
+        
+        # 胡须（上下限）
+        plt.plot([row["Hour"], row["Hour"]], [row["Min"], row["Q1"]], 'k--', linewidth=1)
+        plt.plot([row["Hour"], row["Hour"]], [row["Q3"], row["Max"]], 'k--', linewidth=1)
+        
+        # 上下限横线
+        plt.plot([row["Hour"]-0.15, row["Hour"]+0.15], [row["Min"], row["Min"]], 'k-', linewidth=1)
+        plt.plot([row["Hour"]-0.15, row["Hour"]+0.15], [row["Max"], row["Max"]], 'k-', linewidth=1)
+    
     # 设置标题和标签
     plt.xlabel("Hour")
     plt.ylabel(df.columns[y_col_index])
     plt.title(f"{chart_name}")
-
-    # 显示图表
-    plt.grid()
+    plt.xticks(hours)
+    plt.grid(True, axis='y', linestyle='--', alpha=0.7)
+    
+    # 添加图例
+    from matplotlib.patches import Patch
+    legend_elements = [
+        Patch(facecolor='skyblue', edgecolor='black', alpha=0.8, label='IQR (Q1-Q3)'),
+        plt.Line2D([0], [0], color='r', lw=2, label='Median'),
+        plt.Line2D([0], [0], color='k', linestyle='--', label='Min/Max Range')
+    ]
+    plt.legend(handles=legend_elements, loc='best')
+    
+    plt.savefig(f"./out/{chart_name}_boxplot.png")
     plt.show()
-
 
 # 全天数据
 plot_box("./out/SyncProgressDiff.csv", "SyncProgressDiff", 0, 3)
@@ -89,6 +102,6 @@ plot_box("./out/MineWork.csv", "MineWork", 0, 1)
 # # 少量数据
 # plot_box("./out/short/SyncProgressDiff.csv","SyncProgressDiff_short", 0, 3)
 # plot_box("./out/short/MemPoolRefreshRate.csv","MemPoolRefreshRate_short", 1, 3)
-# plot("./out/short/TxSyncCompleteTimeCost.csv","TxSyncCompleteTimeCost_short", 1, 3)
-# plot("./out/short/SyncTaskBacklog.csv","SyncTaskBacklog_short", 0, 1)
-# plot("./out/short/MineWork.csv","MineWork_short", 0, 1)
+# plot_box("./out/short/TxSyncCompleteTimeCost.csv","TxSyncCompleteTimeCost_short", 1, 3)
+# plot_box("./out/short/SyncTaskBacklog.csv","SyncTaskBacklog_short", 0, 1)
+# plot_box("./out/short/Mine

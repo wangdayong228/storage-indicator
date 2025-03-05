@@ -86,12 +86,12 @@
 ![`SyncTaskBacklog.png`](./out/SyncTaskBacklog_boxplot.png) 
 - **数据描述**：未完成任务数量大多保持在16个以下，表明系统在任务调度上的高效性。
 
-### 5. 挖矿阶段耗时分布
+### 5. 挖矿磁盘加载率（Mb/s）
 
 - 数据文件：[`MineWork.csv`](./out/MineWork.csv)
-- 图表：箱型图显示了不同时间点的挖矿阶段耗时分布。
-![`MineWork.png`](./out/MineWork_boxplot.png) 
-- **数据描述**：大部分挖矿阶段耗时在10秒以内，表明系统在挖矿阶段的高效性。
+- 图表：折线图显示了不同时间点的挖矿磁盘加载率。
+![`MineWork-LoadingRate.png`](./out/MineWork-LoadingRate_minute_avg.png) 
+- **数据描述**：大部分时间挖矿磁盘加载率为 300Mb/s 左右，表明挖矿阶段磁盘加载率高，占用稳定。
 
 ### 5. 服务器性能指标
 

@@ -37,7 +37,8 @@ def plot(input_csv, chart_name, x_col_index, y_col_index):
 
     # 绘制图表
     plt.figure(figsize=(12, 6))
-    plt.plot(df.iloc[:, x_col_index], df.iloc[:, y_col_index], marker='o', linestyle='-', color='b', label=df.columns[y_col_index])
+    # plt.plot(df.iloc[:, x_col_index], df.iloc[:, y_col_index], marker='o', linestyle='-', color='b', label=df.columns[y_col_index])
+    plt.plot(df.iloc[:, x_col_index], df.iloc[:, y_col_index], linestyle='-', linewidth=0.5, color='b', label=df.columns[y_col_index])
 
     # 设置横轴和纵轴名称
     plt.xlabel(df.columns[x_col_index])
@@ -52,13 +53,13 @@ def plot(input_csv, chart_name, x_col_index, y_col_index):
     plt.show()
 
 # 全天数据
-# plot("./out/SyncProgressDiff.csv","SyncProgressDiff", 0, 3)
-# plot("./out/MemPoolRefreshRate.csv","MemPoolRefreshRate", 0, 3)
-# plot("./out/TxSyncCompleteTimeCost.csv","TxSyncCompleteTimeCost", 1, 3)
-# plot("./out/SyncTaskBacklog.csv","SyncTaskBacklog", 0, 1)
+plot("./out/SyncProgressDiff.csv","SyncProgressDiff", 0, 3)
+plot("./out/MemPoolRefreshRate.csv","MemPoolRefreshRate", 0, 3)
+plot("./out/TxSyncCompleteTimeCost.csv","TxSyncCompleteTimeCost", 1, 3)
+plot("./out/SyncTaskBacklog.csv","SyncTaskBacklog", 0, 1)
 plot("./out/MineWork.csv","MineWork", 0, 1)
 
-# 少量数据
+# # 少量数据
 # plot("./out/short/SyncProgressDiff.csv","SyncProgressDiff_short", 0, 3)
 # plot("./out/short/MemPoolRefreshRate.csv","MemPoolRefreshRate_short", 1, 3)
 # plot("./out/short/TxSyncCompleteTimeCost.csv","TxSyncCompleteTimeCost_short", 1, 3)

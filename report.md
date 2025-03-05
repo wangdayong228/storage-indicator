@@ -70,21 +70,21 @@
 - 数据文件：[`MemPoolRefreshRate.csv`](./out/MemPoolRefreshRate.csv)
 - 图表：箱型图展示了内存池刷新时间的分布情况。
 ![`MemPoolRefreshRate.png`](./out/MemPoolRefreshRate_boxplot.png) 
-- **数据描述**：大部分刷新时间集中在50微秒以内，极少数情况下超过100微秒，显示出系统在内存管理上的高效性。
+- **数据描述**：大部分刷新时间集中在10微秒以内，极少数情况下超过60微秒，显示出系统在内存管理上的高效性。
 
 ### 3. 事务同步时间
 
 - 数据文件：[`TxSyncCompleteTimeCost.csv`](./out/TxSyncCompleteTimeCost.csv)
 - 图表：箱型图展示了事务同步完成所需时间的分布。
 ![`TxSyncCompleteTimeCost.png`](./out/TxSyncCompleteTimeCost_boxplot.png) 
-- **数据描述**：大部分事务同步时间在200毫秒以内，少数高峰期达到500毫秒，显示出系统在事务处理上的稳定性。
+- **数据描述**：大部分事务同步时间在10秒以内，显示出系统在事务处理上的稳定性。
 
 ### 4. 同步任务积压
 
 - 数据文件：[`SyncTaskBacklog.csv`](./out/SyncTaskBacklog.csv)
 - 图表：箱型图显示了不同时间点的未完成任务数量。
 ![`SyncTaskBacklog.png`](./out/SyncTaskBacklog_boxplot.png) 
-- **数据描述**：未完成任务数量大多保持在10个以下，表明系统在任务调度上的高效性。
+- **数据描述**：未完成任务数量大多保持在16个以下，表明系统在任务调度上的高效性。
 
 ### 5. 服务器性能指标
 

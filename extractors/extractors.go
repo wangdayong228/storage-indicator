@@ -49,7 +49,7 @@ type MemPoolRefreshPeroid struct {
 
 // 内存池刷新效率
 func MemPoolRefreshRate(r io.Reader, w csv.Writer) error {
-	w.Write([]string{"TxSeq", "StratTime", "EndTime", "TimeUse"})
+	w.Write([]string{"TxSeq", "StratTime", "EndTime", "TimeUse(us)"})
 
 	peroids := make(map[string]*MemPoolRefreshPeroid)
 
@@ -85,11 +85,11 @@ func MemPoolRefreshRate(r io.Reader, w csv.Writer) error {
 		return errors.WithMessage(err, "读取文件错误")
 	}
 
-	times := lo.Keys(peroids)
-	slices.Sort(times)
+	txSeqs := lo.Keys(peroids)
+	slices.Sort(txSeqs)
 
-	for _, _time := range times {
-		peroid := peroids[_time]
+	for _, txSeq := range txSeqs {
+		peroid := peroids[txSeq]
 		timeUse := commonutils.Must(time.Parse(time.RFC3339, peroid.EndTime)).Sub(commonutils.Must(time.Parse(time.RFC3339, peroid.StartTime)))
 		if err := w.Write([]string{peroid.TxSeq, peroid.StartTime, peroid.EndTime, strconv.Itoa(int(timeUse.Microseconds()))}); err != nil {
 			return err
@@ -107,7 +107,7 @@ type TxSyncCompletePeroid struct {
 
 // 事务同步成功的同步时间
 func TxSyncCompleteTimeCost(r io.Reader, w csv.Writer) error {
-	w.Write([]string{"TxSeq", "StratTime", "EndTime", "TimeUse"})
+	w.Write([]string{"TxSeq", "StratTime", "EndTime", "TimeUse(sec)"})
 
 	peroids := make(map[string]*TxSyncCompletePeroid)
 
@@ -145,16 +145,16 @@ func TxSyncCompleteTimeCost(r io.Reader, w csv.Writer) error {
 		return errors.WithMessage(err, "读取文件错误")
 	}
 
-	times := lo.Keys(peroids)
-	slices.Sort(times)
+	txSeq := lo.Keys(peroids)
+	slices.Sort(txSeq)
 
-	for _, _time := range times {
-		peroid := peroids[_time]
+	for _, txSeq := range txSeq {
+		peroid := peroids[txSeq]
 		if peroid.StartTime == "" || peroid.EndTime == "" {
 			continue
 		}
 		timeUse := commonutils.Must(time.Parse(time.RFC3339, peroid.EndTime)).Sub(commonutils.Must(time.Parse(time.RFC3339, peroid.StartTime)))
-		if err := w.Write([]string{peroid.TxSeq, peroid.StartTime, peroid.EndTime, strconv.Itoa(int(timeUse.Microseconds()))}); err != nil {
+		if err := w.Write([]string{peroid.TxSeq, peroid.StartTime, peroid.EndTime, strconv.Itoa(int(timeUse.Seconds()))}); err != nil {
 			return err
 		}
 	}
@@ -190,18 +190,24 @@ func SyncTaskBacklog(r io.Reader, w csv.Writer) error {
 }
 
 type MineWorkInfo struct {
-	Timestamp  string
-	ScratchPad string
-	Loading    string
-	PadMix     string
-	Hit        string
+	Timestamp      string
+	ScratchPad     string
+	ScratchPadRate float32
+	Loading        string
+	LoadingRate    float32
+	PadMix         string
+	PadMixRate     float32
+	Hit            string
+	HitRate        float32
 }
 
 // 挖矿阶段耗时分布
 func MineWork(r io.Reader, w csv.Writer) error {
-	w.Write([]string{"Timestamp", "ScratchPad", "Loading", "PadMix", "Hit"})
+	w.Write([]string{"Timestamp", "ScratchPad(us)", "ScratchPadRate", "Loading(us)", "LoadingRate", "PadMix(us)", "PadMixRate", "Hit(us)", "HitRate"})
 
 	re := regexp.MustCompile(`^(\S+Z).*?Mine iterations statistics: scratch pad: (\d+), loading: (\d+), pad_mix: (\d+), hit: (\d+)`)
+
+	infos := []MineWorkInfo{}
 	// 逐行读取日志文件
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -210,18 +216,46 @@ func MineWork(r io.Reader, w csv.Writer) error {
 		matches := re.FindStringSubmatch(line)
 		if len(matches) == 6 {
 			// 写入 CSV
-			info := MineWorkInfo{
+			infos = append(infos, MineWorkInfo{
 				Timestamp:  matches[1],
 				ScratchPad: matches[2],
 				Loading:    matches[3],
 				PadMix:     matches[4],
 				Hit:        matches[5],
-			}
-			if err := w.Write([]string{info.Timestamp, info.ScratchPad, info.Loading, info.PadMix, info.Hit}); err != nil {
-				return err
-			}
+			})
 		}
 	}
+
+	for i, info := range infos {
+		if i == 0 {
+			continue
+		}
+
+		timeUse := commonutils.Must(time.Parse(time.RFC3339, info.Timestamp)).Sub(commonutils.Must(time.Parse(time.RFC3339, infos[i-1].Timestamp)))
+
+		scratchPadDiff := commonutils.Must(strconv.Atoi(info.ScratchPad)) - commonutils.Must(strconv.Atoi(infos[i-1].ScratchPad))
+		info.ScratchPadRate = float32(scratchPadDiff) / float32(timeUse.Microseconds()) * 1e6
+		loadingDiff := commonutils.Must(strconv.Atoi(info.Loading)) - commonutils.Must(strconv.Atoi(infos[i-1].Loading))
+		info.LoadingRate = float32(loadingDiff) / float32(timeUse.Microseconds()) * 1e6
+		padMixDiff := commonutils.Must(strconv.Atoi(info.PadMix)) - commonutils.Must(strconv.Atoi(infos[i-1].PadMix))
+		info.PadMixRate = float32(padMixDiff) / float32(timeUse.Microseconds()) * 1e6
+		hitDiff := commonutils.Must(strconv.Atoi(info.Hit)) - commonutils.Must(strconv.Atoi(infos[i-1].Hit))
+		info.HitRate = float32(hitDiff) / float32(timeUse.Microseconds()) * 1e6
+
+		if err := w.Write([]string{info.Timestamp,
+			info.ScratchPad,
+			strconv.FormatFloat(float64(info.ScratchPadRate), 'f', 2, 64),
+			info.Loading,
+			strconv.FormatFloat(float64(info.LoadingRate), 'f', 2, 64),
+			info.PadMix,
+			strconv.FormatFloat(float64(info.PadMixRate), 'f', 2, 64),
+			info.Hit,
+			strconv.FormatFloat(float64(info.HitRate), 'f', 2, 64),
+		}); err != nil {
+			return err
+		}
+	}
+
 	if err := scanner.Err(); err != nil {
 		return errors.WithMessage(err, "读取文件错误")
 	}

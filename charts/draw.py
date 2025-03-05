@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 # 折线图
 def plot_line(input_csv, chart_name, x_col_index, y_col_index):
     # 读取 CSV 文件
@@ -25,24 +26,26 @@ def plot_line(input_csv, chart_name, x_col_index, y_col_index):
     plt.grid()
 
     # 保存图表
-    plt.savefig(f"./out/{chart_name}.png")
+    plt.savefig(f"./out/{chart_name}_line.png")
     plt.show()
 
+
 # 自定义箱型图（只显示四分位数信息）
-def plot_box(input_csv, chart_name, x_col_index, y_col_index):
+# y_col_log 为是否 y 轴指数型表示
+def plot_box(input_csv, chart_name, x_col_index, y_col_index, y_col_log=False):
     # 读取 CSV 文件
     df = pd.read_csv(input_csv, parse_dates=[x_col_index])
 
     # 提取小时
     df["Hour"] = df[df.columns[x_col_index]].dt.hour
-    
+
     # 准备图表
     plt.figure(figsize=(12, 6))
-    
+
     # 按小时分组并计算统计量
     hours = sorted(df["Hour"].unique())
     stats_data = []
-    
+
     for hour in hours:
         hour_data = df[df["Hour"] == hour][df.columns[y_col_index]]
         if not hour_data.empty:
@@ -53,51 +56,60 @@ def plot_box(input_csv, chart_name, x_col_index, y_col_index):
             q3 = hour_data.quantile(0.75)
             max_val = hour_data.max()
             stats_data.append([hour, min_val, q1, median, q3, max_val])
-    
+
     stats_df = pd.DataFrame(stats_data, columns=["Hour", "Min", "Q1", "Median", "Q3", "Max"])
-    
+
     # 绘制自定义箱型图
     for i, row in stats_df.iterrows():
         # 箱体（Q1-Q3）
-        plt.fill_between([row["Hour"]-0.3, row["Hour"]+0.3], [row["Q1"], row["Q1"]], 
-                         [row["Q3"], row["Q3"]], color='skyblue', alpha=0.8)
-        
+        plt.fill_between(
+            [row["Hour"] - 0.3, row["Hour"] + 0.3], [row["Q1"], row["Q1"]], [row["Q3"], row["Q3"]], color="skyblue", alpha=0.8
+        )
+
         # 中位线
-        plt.plot([row["Hour"]-0.3, row["Hour"]+0.3], [row["Median"], row["Median"]], 'r', linewidth=2)
-        
+        plt.plot([row["Hour"] - 0.3, row["Hour"] + 0.3], [row["Median"], row["Median"]], "r", linewidth=2)
+
         # 胡须（上下限）
-        plt.plot([row["Hour"], row["Hour"]], [row["Min"], row["Q1"]], 'k--', linewidth=1)
-        plt.plot([row["Hour"], row["Hour"]], [row["Q3"], row["Max"]], 'k--', linewidth=1)
-        
+        plt.plot([row["Hour"], row["Hour"]], [row["Min"], row["Q1"]], "k--", linewidth=1)
+        plt.plot([row["Hour"], row["Hour"]], [row["Q3"], row["Max"]], "k--", linewidth=1)
+
         # 上下限横线
-        plt.plot([row["Hour"]-0.15, row["Hour"]+0.15], [row["Min"], row["Min"]], 'k-', linewidth=1)
-        plt.plot([row["Hour"]-0.15, row["Hour"]+0.15], [row["Max"], row["Max"]], 'k-', linewidth=1)
-    
+        plt.plot([row["Hour"] - 0.15, row["Hour"] + 0.15], [row["Min"], row["Min"]], "k-", linewidth=1)
+        plt.plot([row["Hour"] - 0.15, row["Hour"] + 0.15], [row["Max"], row["Max"]], "k-", linewidth=1)
+
     # 设置标题和标签
     plt.xlabel("Hour")
     plt.ylabel(df.columns[y_col_index])
     plt.title(f"{chart_name}")
     plt.xticks(hours)
-    plt.grid(True, axis='y', linestyle='--', alpha=0.7)
-    
+    plt.grid(True, axis="y", linestyle="--", alpha=0.7)
+
+    # 如果需要对数刻度
+    if y_col_log:
+        plt.yscale("log")
+
     # 添加图例
     from matplotlib.patches import Patch
+
     legend_elements = [
-        Patch(facecolor='skyblue', edgecolor='black', alpha=0.8, label='IQR (Q1-Q3)'),
-        plt.Line2D([0], [0], color='r', lw=2, label='Median'),
-        plt.Line2D([0], [0], color='k', linestyle='--', label='Min/Max Range')
+        Patch(facecolor="skyblue", edgecolor="black", alpha=0.8, label="IQR (Q1-Q3)"),
+        plt.Line2D([0], [0], color="r", lw=2, label="Median"),
+        plt.Line2D([0], [0], color="k", linestyle="--", label="Min/Max Range"),
     ]
-    plt.legend(handles=legend_elements, loc='best')
-    
+    plt.legend(handles=legend_elements, loc="best")
+
     plt.savefig(f"./out/{chart_name}_boxplot.png")
     plt.show()
+
 
 # 全天数据
 plot_box("./out/SyncProgressDiff.csv", "SyncProgressDiff", 0, 3)
 plot_box("./out/MemPoolRefreshRate.csv", "MemPoolRefreshRate", 1, 3)
-plot_box("./out/TxSyncCompleteTimeCost.csv", "TxSyncCompleteTimeCost", 1, 3)
+plot_box("./out/TxSyncCompleteTimeCost.csv", "TxSyncCompleteTimeCost", 1, 3, True)
 plot_box("./out/SyncTaskBacklog.csv", "SyncTaskBacklog", 0, 1)
-plot_box("./out/MineWork.csv", "MineWork", 0, 1)
+plot_box("./out/MineWork.csv", "MineWork-ScratchPadRate", 0, 2)
+plot_box("./out/MineWork.csv", "MineWork-LoadingRate", 0, 4)
+plot_box("./out/MineWork.csv", "MineWork-PadMixRate", 0, 6)
 
 # # 少量数据
 # plot_box("./out/short/SyncProgressDiff.csv","SyncProgressDiff_short", 0, 3)

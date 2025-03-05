@@ -86,13 +86,20 @@
 ![`SyncTaskBacklog.png`](./out/SyncTaskBacklog_boxplot.png) 
 - **数据描述**：未完成任务数量大多保持在16个以下，表明系统在任务调度上的高效性。
 
+### 5. 挖矿阶段耗时分布
+
+- 数据文件：[`MineWork.csv`](./out/MineWork.csv)
+- 图表：箱型图显示了不同时间点的挖矿阶段耗时分布。
+![`MineWork.png`](./out/MineWork_boxplot.png) 
+- **数据描述**：大部分挖矿阶段耗时在10秒以内，表明系统在挖矿阶段的高效性。
+
 ### 5. 服务器性能指标
 
 - 图表：包括 CPU 使用率、读 IOPS、写 IOPS 和读写磁盘延迟的折线图。
 ![`server_ssd.png`](./out/server/ssd/monitoring.jpg) 
 ![`server_ssd.png`](./out/server/ssd/resource.jpg) 
 - **数据描述**：
-  - **CPU 使用率**：大部分时间 CPU 使用率保持在 12.5% 以下，峰值达到 85%。
+  - **CPU 使用率**：大部分时间 CPU 使用率保持在 12.5% 以下。
   - **读 IOPS**：平均值 400 以下，峰值800。
   - **写 IOPS**：平均值 30 以下，峰值100。
   - **读硬盘延迟**：大部分延迟在 1 毫秒以内，极少数情况下超过 2 毫秒，平均延迟 1 毫秒。

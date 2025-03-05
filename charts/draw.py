@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 
 
 # 折线图
@@ -25,8 +26,38 @@ def plot_line(input_csv, chart_name, x_col_index, y_col_index):
     plt.legend()
     plt.grid()
 
+    # 格式化横轴为仅显示时间
+    plt.gca().xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter("%H:%M"))
+
     # 保存图表
     plt.savefig(f"./out/{chart_name}_line.png")
+    plt.show()
+
+
+# 包含离群值的箱型图
+def plot_box_with_outliers(input_csv, chart_name, x_col_index, y_col_index, y_col_log=False):
+    # 读取 CSV 文件（假设有 4 列）
+    df = pd.read_csv(input_csv, parse_dates=[x_col_index])
+
+    # 提取小时
+    df["Hour"] = df[df.columns[x_col_index]].dt.hour
+
+    # 画箱型图，使用最后一列 'Value'
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(x="Hour", y=df.columns[y_col_index], data=df)
+
+    # 设置标题和标签
+    plt.xlabel("Hour")
+    plt.ylabel(df.columns[y_col_index])
+    plt.title(f"{chart_name}")
+
+    # 显示图表
+    plt.grid()
+    # 如果需要对数刻度
+    if y_col_log:
+        plt.yscale("log")
+
+    plt.savefig(f"./out/{chart_name}_boxplot.png")
     plt.show()
 
 
@@ -102,13 +133,56 @@ def plot_box(input_csv, chart_name, x_col_index, y_col_index, y_col_log=False):
     plt.show()
 
 
+def plot_minute_average(input_csv, chart_name, timestamp_col_index, value_col_name):
+    # 读取 CSV 文件
+    df = pd.read_csv(input_csv)
+
+    print("columns", df.columns)
+    print("value column", value_col_name)
+
+    # 确保时间戳列转换为 datetime 类型
+    df[df.columns[timestamp_col_index]] = pd.to_datetime(df[df.columns[timestamp_col_index]])
+
+    # 过滤数据，只保留前 6 小时的数据
+    start_time = df[df.columns[timestamp_col_index]].min()
+    end_time = start_time + pd.Timedelta(hours=6)
+    df = df[(df[df.columns[timestamp_col_index]] >= start_time) & (df[df.columns[timestamp_col_index]] < end_time)]
+
+    print("value column2", value_col_name)
+    # 设置时间戳列为索引
+    df.set_index(df.columns[timestamp_col_index], inplace=True)
+
+    # 按分钟重采样并计算平均值
+    minute_avg = df[value_col_name].resample("T").mean()
+    print("value column2", value_col_name)
+    # 绘制图表
+    plt.figure(figsize=(12, 6))
+    plt.plot(minute_avg.index, minute_avg.values, linestyle="-", linewidth=0.5, color="b", label="Average Value per Minute")
+
+    # 设置横轴和纵轴名称
+    plt.xlabel("Time (Minutes)")
+    print("value column2", value_col_name)
+    plt.ylabel(f"{value_col_name}(Avg)")
+    plt.title(f"{chart_name}")
+    plt.xticks(rotation=45)
+    plt.legend()
+    plt.grid()
+
+    # 格式化横轴为仅显示时间
+    plt.gca().xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter("%H:%M"))
+
+    # 保存图表
+    plt.savefig(f"./out/{chart_name}_minute_avg.png")
+    plt.show()
+
+
 # 全天数据
 plot_box("./out/SyncProgressDiff.csv", "SyncProgressDiff", 0, 3)
 plot_box("./out/MemPoolRefreshRate.csv", "MemPoolRefreshRate", 1, 3)
-plot_box("./out/TxSyncCompleteTimeCost.csv", "TxSyncCompleteTimeCost", 1, 3, True)
+plot_box_with_outliers("./out/TxSyncCompleteTimeCost.csv", "TxSyncCompleteTimeCost", 1, 3, True)
 plot_box("./out/SyncTaskBacklog.csv", "SyncTaskBacklog", 0, 1)
 plot_box("./out/MineWork.csv", "MineWork-ScratchPadRate", 0, 2)
-plot_box("./out/MineWork.csv", "MineWork-LoadingRate", 0, 4)
+plot_minute_average("./out/MineWork.csv", "MineWork-LoadingRate", 0, "LoadingRate")
 plot_box("./out/MineWork.csv", "MineWork-PadMixRate", 0, 6)
 
 # # 少量数据

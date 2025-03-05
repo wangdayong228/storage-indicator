@@ -5,12 +5,14 @@ import (
 	"encoding/csv"
 	"io"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/nft-rainbow/rainbow-goutils/utils/commonutils"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 )
 
 // 同步进度差异
@@ -83,7 +85,11 @@ func MemPoolRefreshRate(r io.Reader, w csv.Writer) error {
 		return errors.WithMessage(err, "读取文件错误")
 	}
 
-	for _, peroid := range peroids {
+	times := lo.Keys(peroids)
+	slices.Sort(times)
+
+	for _, _time := range times {
+		peroid := peroids[_time]
 		timeUse := commonutils.Must(time.Parse(time.RFC3339, peroid.EndTime)).Sub(commonutils.Must(time.Parse(time.RFC3339, peroid.StartTime)))
 		if err := w.Write([]string{peroid.TxSeq, peroid.StartTime, peroid.EndTime, strconv.Itoa(int(timeUse.Microseconds()))}); err != nil {
 			return err
@@ -139,7 +145,11 @@ func TxSyncCompleteTimeCost(r io.Reader, w csv.Writer) error {
 		return errors.WithMessage(err, "读取文件错误")
 	}
 
-	for _, peroid := range peroids {
+	times := lo.Keys(peroids)
+	slices.Sort(times)
+
+	for _, _time := range times {
+		peroid := peroids[_time]
 		if peroid.StartTime == "" || peroid.EndTime == "" {
 			continue
 		}

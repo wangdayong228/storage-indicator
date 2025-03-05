@@ -10,11 +10,19 @@ import (
 )
 
 func main() {
-	extract(extractors.SyncProgressDiff, "./log/zgs.log.2025-03-02", "./out/SyncProgressDiff.csv")
-	extract(extractors.MemPoolRefreshRate, "./log/zgs.log.2025-03-02", "./out/MemPoolRefreshRate.csv")
-	extract(extractors.TxSyncCompleteTimeCost, "./log/zgs.log.2025-03-02", "./out/TxSyncCompleteTimeCost.csv")
-	extract(extractors.SyncTaskBacklog, "./log/zgs.log.2025-03-02", "./out/SyncTaskBacklog.csv")
-	extract(extractors.MineWork, "./log/zgs.log.2025-03-02", "./out/MineWork.csv")
+
+	// 全天
+	source := "./log/zgs.log.2025-03-02"
+	outDir := "./out"
+
+	// 少量日志
+	// source := "./log/zgs.log.2025-03-02.short"
+	// outDir := "./out/short"
+	extract(extractors.SyncProgressDiff, source, outDir+"/SyncProgressDiff.csv")
+	extract(extractors.MemPoolRefreshRate, source, outDir+"/MemPoolRefreshRate.csv")
+	extract(extractors.TxSyncCompleteTimeCost, source, outDir+"/TxSyncCompleteTimeCost.csv")
+	extract(extractors.SyncTaskBacklog, source, outDir+"/SyncTaskBacklog.csv")
+	extract(extractors.MineWork, source, outDir+"/MineWork.csv")
 }
 
 func extract(fn func(r io.Reader, w csv.Writer) error, sourceFile string, targetFile string) error {

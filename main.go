@@ -18,10 +18,10 @@ func main() {
 	// 少量日志
 	// source := "./log/zgs.log.2025-03-02.short"
 	// outDir := "./out/short"
-	// extract(extractors.SyncProgressDiff, source, outDir+"/SyncProgressDiff.csv")
-	// extract(extractors.MemPoolRefreshRate, source, outDir+"/MemPoolRefreshRate.csv")
-	// extract(extractors.TxSyncCompleteTimeCost, source, outDir+"/TxSyncCompleteTimeCost.csv")
-	// extract(extractors.SyncTaskBacklog, source, outDir+"/SyncTaskBacklog.csv")
+	extract(extractors.SyncProgressDiff, source, outDir+"/SyncProgressDiff.csv")
+	extract(extractors.MemPoolRefreshRate, source, outDir+"/MemPoolRefreshRate.csv")
+	extract(extractors.TxSyncCompleteTimeCost, source, outDir+"/TxSyncCompleteTimeCost.csv")
+	extract(extractors.SyncTaskBacklog, source, outDir+"/SyncTaskBacklog.csv")
 	extract(extractors.MineWork, source, outDir+"/MineWork.csv")
 }
 

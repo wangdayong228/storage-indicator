@@ -1,2 +1,4 @@
 .venv
 log
+storage-indicator
+.DS_Store

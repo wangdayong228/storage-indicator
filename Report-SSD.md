@@ -1,3 +1,35 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [数据存储系统性能测试报告](#%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E6%8A%A5%E5%91%8A)
+  - [一、概述](#%E4%B8%80%E6%A6%82%E8%BF%B0)
+  - [二、测试环境](#%E4%BA%8C%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83)
+    - [1. 硬件环境](#1-%E7%A1%AC%E4%BB%B6%E7%8E%AF%E5%A2%83)
+    - [2. 软件环境](#2-%E8%BD%AF%E4%BB%B6%E7%8E%AF%E5%A2%83)
+  - [三、测试方法](#%E4%B8%89%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95)
+    - [1. 测试场景描述](#1-%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF%E6%8F%8F%E8%BF%B0)
+    - [2. 测试过程和监控方式](#2-%E6%B5%8B%E8%AF%95%E8%BF%87%E7%A8%8B%E5%92%8C%E7%9B%91%E6%8E%A7%E6%96%B9%E5%BC%8F)
+  - [四、测试结果](#%E5%9B%9B%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C)
+    - [1. 同步进度差](#1-%E5%90%8C%E6%AD%A5%E8%BF%9B%E5%BA%A6%E5%B7%AE)
+    - [2. 内存池刷新效率](#2-%E5%86%85%E5%AD%98%E6%B1%A0%E5%88%B7%E6%96%B0%E6%95%88%E7%8E%87)
+    - [3. 事务同步时间](#3-%E4%BA%8B%E5%8A%A1%E5%90%8C%E6%AD%A5%E6%97%B6%E9%97%B4)
+    - [4. 同步任务积压](#4-%E5%90%8C%E6%AD%A5%E4%BB%BB%E5%8A%A1%E7%A7%AF%E5%8E%8B)
+    - [5. 挖矿磁盘加载率（Mb/s）](#5-%E6%8C%96%E7%9F%BF%E7%A3%81%E7%9B%98%E5%8A%A0%E8%BD%BD%E7%8E%87mbs)
+    - [5. 服务器性能指标](#5-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87)
+  - [五、测试结果解析](#%E4%BA%94%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C%E8%A7%A3%E6%9E%90)
+    - [（一）系统稳定性表现优异](#%E4%B8%80%E7%B3%BB%E7%BB%9F%E7%A8%B3%E5%AE%9A%E6%80%A7%E8%A1%A8%E7%8E%B0%E4%BC%98%E5%BC%82)
+    - [（二）高效的内存管理机制](#%E4%BA%8C%E9%AB%98%E6%95%88%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6)
+    - [（三）任务调度与处理能力卓越](#%E4%B8%89%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B8%8E%E5%A4%84%E7%90%86%E8%83%BD%E5%8A%9B%E5%8D%93%E8%B6%8A)
+    - [（四）磁盘性能满足业务高负载需求](#%E5%9B%9B%E7%A3%81%E7%9B%98%E6%80%A7%E8%83%BD%E6%BB%A1%E8%B6%B3%E4%B8%9A%E5%8A%A1%E9%AB%98%E8%B4%9F%E8%BD%BD%E9%9C%80%E6%B1%82)
+    - [（五）服务器资源利用高效合理](#%E4%BA%94%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%B5%84%E6%BA%90%E5%88%A9%E7%94%A8%E9%AB%98%E6%95%88%E5%90%88%E7%90%86)
+  - [六、测试结论](#%E5%85%AD%E6%B5%8B%E8%AF%95%E7%BB%93%E8%AE%BA)
+  - [七、附录](#%E4%B8%83%E9%99%84%E5%BD%95)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+
+
 # 数据存储系统性能测试报告
 
 ## 一、概述
@@ -131,8 +163,8 @@
 总体而言，经过长达 100 天的持续监测，本次测试结果表明系统在挖矿磁盘加载率方面表现优异，能够高效处理磁盘读写任务，满足实际业务场景中对于响应速度和稳定性的需求。
 
 ### 5. 服务器性能指标
-![`server_ssd.png`](./out/ssd/server/ssd/zg-ssd-monitor-cut.png) 
-![`server_ssd.png`](./out/ssd/server/ssd/resource.jpg) 
+![`server_ssd.png`](./out/server/ssd/zg-ssd-monitor-cut.png) 
+![`server_ssd.png`](./out/server/ssd/resource.jpg) 
 
 服务器性能指标是衡量系统在运行过程中服务器资源使用情况的重要指标。通过对 CPU 使用率、读 IOPS、写 IOPS 和读写磁盘延迟的监控，可以全面了解系统在运行过程中的资源使用情况和性能表现。
 
@@ -235,71 +267,4 @@
 2025-03-02T00:00:00.342944Z DEBUG sync::controllers::serial: transition ended self.tx_seq=3021372 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
 2025-03-02T00:00:00.342945Z DEBUG sync::controllers::serial: transition started self.tx_seq=5253262 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
 2025-03-02T00:00:00.342946Z DEBUG sync::controllers::serial: transition ended self.tx_seq=5253262 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
-2025-03-02T00:00:00.342947Z DEBUG sync::controllers::serial: transition started self.tx_seq=5253251 self.state=FindingPeers { origin: "5 seconds ago", since: "5 seconds ago" }
-2025-03-02T00:00:00.342948Z DEBUG sync::controllers::serial: transition ended self.tx_seq=5253251 self.state=Failed { reason: TimeoutFindFile }
-2025-03-02T00:00:00.342950Z DEBUG sync::controllers::serial: transition started self.tx_seq=5253261 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
-2025-03-02T00:00:00.342953Z DEBUG sync::controllers::serial: transition ended self.tx_seq=5253261 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
-2025-03-02T00:00:00.342954Z DEBUG sync::controllers::serial: transition started self.tx_seq=3950622 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
-2025-03-02T00:00:00.342956Z DEBUG sync::controllers::serial: transition ended self.tx_seq=3950622 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
-2025-03-02T00:00:00.342956Z DEBUG sync::controllers::serial: transition started self.tx_seq=5253256 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
-2025-03-02T00:00:00.342958Z DEBUG sync::controllers::serial: transition ended self.tx_seq=5253256 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
-2025-03-02T00:00:00.342959Z DEBUG sync::controllers::serial: transition started self.tx_seq=3179933 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
-2025-03-02T00:00:00.342960Z DEBUG sync::controllers::serial: transition ended self.tx_seq=3179933 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
-2025-03-02T00:00:00.342961Z DEBUG sync::service: Sync stat: incompleted = [3287626, 5253257, 5253258, 3286443, 3407635, 4443680, 4176634, 5253259, 5253260, 3021372, 5253262, 5253251, 5253261, 3950622, 5253256, 3179933], completed = []
-2025-03-02T00:00:00.362890Z  WARN discv5::handler: Session has invalid ENR. Enr socket: Some(43.167.160.52:34151), Node: 0xe3a7..2df4, addr: 43.167.160.52:36036
-2025-03-02T00:00:00.382465Z  WARN discv5::handler: Session has invalid ENR. Enr socket: Some(43.153.132.44:34151), Node: 0xdf0d..1837, addr: 43.153.132.44:13688
-2025-03-02T00:00:00.384793Z  WARN discv5::handler: Session has invalid ENR. Enr socket: Some(43.131.42.33:34151), Node: 0xcdf8..8a48, addr: 43.131.42.33:18971
-2025-03-02T00:00:00.397963Z  INFO rpc::zgs::r#impl: zgs_getStatus()
-2025-03-02T00:00:00.422698Z  WARN discv5::handler: Session has invalid ENR. Enr socket: Some(43.155.212.191:34151), Node: 0x8db8..05ac, addr: 43.155.212.191:59218
-2025-03-02T00:00:00.475281Z  WARN discv5::handler: Session has invalid ENR. Enr socket: Some(43.166.2.123:34151), Node: 0xe3d0..d6bd, addr: 43.166.2.123:24493
-2025-03-02T00:00:00.501652Z  INFO rpc::zgs::r#impl: zgs_getStatus()
-2025-03-02T00:00:00.571327Z DEBUG log_entry_sync::sync_manager::log_entry_fetcher: from block number 3451530, latest block number 3451532, confirmation delay 3
-2025-03-02T00:00:00.571335Z DEBUG log_entry_sync::sync_manager::log_entry_fetcher: log sync gets entries without progress? old_progress=3451530
-2025-03-02T00:00:00.587109Z  WARN discv5::handler: Session has invalid ENR. Enr socket: Some(43.133.1.168:34151), Node: 0xf888..642d, addr: 43.133.1.168:28888
-2025-03-02T00:00:00.664938Z  WARN discv5::handler: Session has invalid ENR. Enr socket: Some(43.163.94.56:34151), Node: 0x10ec..1d10, addr: 43.163.94.56:35632
-2025-03-02T00:00:00.870422Z  WARN discv5::handler: Session has invalid ENR. Enr socket: Some(43.134.73.120:34151), Node: 0x9726..cde6, addr: 43.134.73.120:11437
-2025-03-02T00:00:00.953744Z  INFO sync::service: Terminate file sync min_tx_seq=5253257 is_reverted=false
-2025-03-02T00:00:00.953755Z DEBUG sync::service: File sync terminated to_terminate=[5253257]
-2025-03-02T00:00:00.953759Z  INFO sync::auto_sync::batcher: Terminate file sync due to file already completed in db tx_seq=5253257 num_terminated=1 tx_status=Finalized
-2025-03-02T00:00:00.953788Z DEBUG sync::auto_sync::batcher_random: Completed to sync file, state = Ok(RandomBatcherState { name: "random_historical", tasks: [5253251, 5253256, 5253258, 5253259, 5253260, 5253261, 5253262], pending_txs: 2836315, ready_txs: 10, cached_ready_txs: 0 }) tx_seq=5253257 sync_result=Completed
-2025-03-02T00:00:00.954056Z DEBUG sync::auto_sync::batcher: Failed to sync file and terminate the failed file sync reason=TimeoutFindFile
-2025-03-02T00:00:00.954061Z  INFO sync::service: Terminate file sync min_tx_seq=5253251 is_reverted=false
-2025-03-02T00:00:00.954064Z DEBUG sync::service: File sync terminated to_terminate=[5253251]
-2025-03-02T00:00:00.954093Z DEBUG sync::auto_sync::batcher_random: Completed to sync file, state = Ok(RandomBatcherState { name: "random_historical", tasks: [5253256, 5253258, 5253259, 5253260, 5253261, 5253262], pending_txs: 2836315, ready_txs: 9, cached_ready_txs: 0 }) tx_seq=5253251 sync_result=Timeout
-2025-03-02T00:00:00.954328Z DEBUG sync::auto_sync::batcher_random: Pick a file to sync, state = Ok(RandomBatcherState { name: "random_historical", tasks: [5253253, 5253256, 5253258, 5253259, 5253260, 5253261, 5253262], pending_txs: 2836316, ready_txs: 8, cached_ready_txs: 0 })
-2025-03-02T00:00:00.954486Z  INFO sync::service: Terminate file sync min_tx_seq=5253259 is_reverted=false
-2025-03-02T00:00:00.954491Z DEBUG sync::service: File sync terminated to_terminate=[5253259]
-2025-03-02T00:00:00.954495Z  INFO sync::auto_sync::batcher: Terminate file sync due to file already completed in db tx_seq=5253259 num_terminated=1 tx_status=Finalized
-2025-03-02T00:00:00.954521Z DEBUG sync::auto_sync::batcher_random: Completed to sync file, state = Ok(RandomBatcherState { name: "random_historical", tasks: [5253253, 5253256, 5253258, 5253260, 5253261, 5253262], pending_txs: 2836316, ready_txs: 8, cached_ready_txs: 0 }) tx_seq=5253259 sync_result=Completed
-2025-03-02T00:00:00.954765Z  INFO sync::service: Start to sync file tx_seq=5253253 maybe_range=None maybe_peer=None
-2025-03-02T00:00:00.954940Z DEBUG sync::controllers::serial: transition started self.tx_seq=5253253 self.state=Idle
-2025-03-02T00:00:00.954947Z  INFO sync::controllers::serial: Finding peers self.tx_seq=5253253 published=true num_new_peers=0
-2025-03-02T00:00:00.954950Z DEBUG sync::controllers::serial: transition ended self.tx_seq=5253253 self.state=FindingPeers { origin: "0 seconds ago", since: "0 seconds ago" }
-2025-03-02T00:00:00.954962Z DEBUG router::service: Sending pubsub messages count=1 topics=[AskFile]
-2025-03-02T00:00:00.955099Z  WARN network::behaviour: Failed to publish message error=InsufficientPeers topic=AskFile
-2025-03-02T00:00:01.201522Z  WARN discv5::handler: Session has invalid ENR. Enr socket: Some(124.156.208.92:34151), Node: 0x15ad..3aa2, addr: 124.156.208.92:33197
-2025-03-02T00:00:01.219981Z DEBUG log_entry_sync::sync_manager::log_entry_fetcher: from block number 3451530, latest block number 3451533, confirmation delay 3
-2025-03-02T00:00:01.289273Z  INFO rpc::admin::r#impl: admin_getFileLocation()
-2025-03-02T00:00:01.289632Z  INFO rpc::admin::r#impl: admin_findFile(5253262)
-2025-03-02T00:00:01.289731Z DEBUG router::service: Sending pubsub messages count=1 topics=[FindFile]
-2025-03-02T00:00:01.289860Z  WARN network::behaviour: Failed to publish message error=InsufficientPeers topic=FindFile
-2025-03-02T00:00:01.328689Z  WARN discv5::handler: Received an authenticated header without a matching WHOAREYOU request. Node: 0xab78..86f4, addr: 112.249.219.67:1026
-2025-03-02T00:00:01.411454Z  INFO rpc::zgs::r#impl: zgs_getStatus()
-2025-03-02T00:00:01.427233Z  INFO rpc::zgs::r#impl: zgs_getStatus()
-2025-03-02T00:00:01.493750Z  INFO rpc::admin::r#impl: admin_getFileLocation()
-2025-03-02T00:00:01.537469Z  INFO rpc::zgs::r#impl: zgs_uploadSegmentsByTxSeq tx_seq=5253260 indices=0
-2025-03-02T00:00:01.538040Z DEBUG chunk_pool::mem_pool::chunk_pool_inner: Begin to write segment, root=0x7ce8…85fe, segment_size=52480, segment_index=0
-2025-03-02T00:00:01.538852Z DEBUG chunk_pool::mem_pool::chunk_write_control: Succeeded to write segment, root=0x7ce8…85fe, seg_index=0, total_writings=7
-2025-03-02T00:00:01.538860Z DEBUG chunk_pool::mem_pool::chunk_pool_inner: Queue to finalize transaction for file 0x7ce8…85fe
-2025-03-02T00:00:01.538913Z DEBUG chunk_pool::handler: Received task to finalize transaction id=FileID { root: 0x7ce80f65756ffcab5e481a58172e8e4c03fa5d63f18a204666b07fe865b085fe, tx_id: TxID { seq: 5253260, hash: 0x074474622464aab64cfc7791a5eece2da1f19975a1da60e10dccc0a79feb933d } }
-2025-03-02T00:00:01.538953Z DEBUG storage::log_store::log_manager: finalize_tx_with_hash: tx=Transaction { stream_ids: [], data: [], data_merkle_root: 0x7ce80f65756ffcab5e481a58172e8e4c03fa5d63f18a204666b07fe865b085fe, merkle_nodes: [(8, 0xff84d31dda7bc47209f296fc45574f4e78ce51cda6180c367e06a13e4eef9e39), (7, 0x9879e11a2fecbff7e9a7407f4cd20a74a35d8f72ca2031d890f3822bbd2fd458), (5, 0x858693a37291474feb7b97417240e91cefd91f90621d44e1f667d0c9c3878559)], start_entry_index: 9365205120, size: 52466, seq: 5253260 }
-2025-03-02T00:00:01.538973Z DEBUG storage::log_store::log_manager: segments_for_proof: 1, last_segment_size_for_proof: 208
-2025-03-02T00:00:01.538975Z DEBUG storage::log_store::log_manager: segments_for_file: 1, last_segment_size_for_file: 205
-2025-03-02T00:00:01.538976Z DEBUG storage::log_store::log_manager: Padding size: 768
-2025-03-02T00:00:01.539498Z DEBUG chunk_pool::handler: Transaction finalized id=FileID { root: 0x7ce80f65756ffcab5e481a58172e8e4c03fa5d63f18a204666b07fe865b085fe, tx_id: TxID { seq: 5253260, hash: 0x074474622464aab64cfc7791a5eece2da1f19975a1da60e10dccc0a79feb933d } } elapsed=577.051µs
-2025-03-02T00:00:01.539637Z  WARN network::behaviour: Failed to publish message error=InsufficientPeers topic=NewFile
-2025-03-02T00:00:01.539645Z DEBUG router::service: Publish NewFile message new_file=ShardedFile { tx_id: TxID { seq: 5253260, hash: 0x074474622464aab64cfc7791a5eece2da1f19975a1da60e10dccc0a79feb933d }, shard_config: ShardConfig { num_shard: 1, shard_id: 0 } }
-2025-03-02T00:00:01.554474Z  WARN discv5::handler: Session has invalid ENR. Enr socket: Some(217.76.51.115:1234), Node: 0x36a2..b589, addr: 217.76.51.115:1234
-2025-03-02T00:00:01.580353Z  WARN discv5::handler: Session has invalid ENR. Enr socket: Some(75.119.159.211:1234), Node: 0x6539..8232, addr: 75.119.159.211:1234
-2025-03-02T00:00:01.581964Z  INFO log_entry_sync::sync_manager::log_entry_fetcher: synced 7 events
 ```

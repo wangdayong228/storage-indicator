@@ -178,13 +178,14 @@ def plot_mine_net_rate_minute_average(input_csv, chart_name, timestamp_col_index
 
 # 全天数据
 dir = "./out/hdd"
-plot_box(f"{dir}/SyncProgressDiff.csv", "SyncProgressDiff", 0, 3)
-plot_box(f"{dir}/MemPoolRefreshRate.csv", "MemPoolRefreshRate", 1, 3)
-plot_box_with_outliers(f"{dir}/TxSyncCompleteTimeCost.csv", "TxSyncCompleteTimeCost", 1, 3, True)
-plot_box(f"{dir}/SyncTaskBacklog.csv", "SyncTaskBacklog", 0, 1)
-plot_box(f"{dir}/MineWork.csv", "MineWork-ScratchPadRate", 0, 2)
-plot_mine_net_rate_minute_average(f"{dir}/MineWork.csv", "MineWork-LoadingRate", 0, "LoadingRate")
-plot_box(f"{dir}/MineWork.csv", "MineWork-PadMixRate", 0, 6)
+# plot_box(f"{dir}/SyncProgressDiff.csv", "SyncProgressDiff", 0, 3)
+plot_box(f"{dir}/MemPoolRefreshRate.csv", "MemPoolRefreshRate", 1, 3, True)
+# plot_box_with_outliers(f"{dir}/TxSyncCompleteTimeCost.csv", "TxSyncCompleteTimeCost", 1, 3, True)
+# plot_box(f"{dir}/SyncTaskBacklog.csv", "SyncTaskBacklog", 0, 1)
+# plot_mine_net_rate_minute_average(f"{dir}/MineWork.csv", "MineWork-LoadingRate", 0, "LoadingRate")
+
+# plot_box(f"{dir}/MineWork.csv", "MineWork-PadMixRate", 0, 6)
+# plot_box(f"{dir}/MineWork.csv", "MineWork-ScratchPadRate", 0, 2)
 
 # # 少量数据
 # plot_box("./out/short/SyncProgressDiff.csv","SyncProgressDiff_short", 0, 3)

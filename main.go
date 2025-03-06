@@ -63,27 +63,27 @@ func CountIndicators(source string) {
 
 	go func() {
 		defer wg.Done()
-		SyncProgressDiffCount = counts.CountRegMatchs(source, regexp.MustCompile(`^(\S+Z).*?from block number (\d+), latest block number (\d+)`))
+		SyncProgressDiffCount = counts.CountRegMatchs("SyncProgressDiff", source, regexp.MustCompile(`^(\S+Z).*?from block number (\d+), latest block number (\d+)`))
 	}()
 
 	go func() {
 		defer wg.Done()
-		MemPoolRefreshRate = counts.CountRegMatchs(source, regexp.MustCompile(`^(\S+Z).*?cached segments flushed to log store.*?tx_seq:(\d+)`))
+		MemPoolRefreshRate = counts.CountRegMatchs("MemPoolRefreshRate", source, regexp.MustCompile(`^(\S+Z).*?cached segments flushed to log store.*?tx_seq:(\d+)`))
 	}()
 
 	go func() {
 		defer wg.Done()
-		TxSyncCompleteTimeCost = counts.CountRegMatchs(source, regexp.MustCompile(`^(\S+Z).*?Completed to sync file.* tx_seq=(\d+) sync_result=Completed`))
+		TxSyncCompleteTimeCost = counts.CountRegMatchs("TxSyncCompleteTimeCost", source, regexp.MustCompile(`^(\S+Z).*?Completed to sync file.* tx_seq=(\d+) sync_result=Completed`))
 	}()
 
 	go func() {
 		defer wg.Done()
-		SyncTaskBacklog = counts.CountRegMatchs(source, regexp.MustCompile(`^(\S+Z).*?Sync stat: incompleted = \[(.*)\], completed =.*`))
+		SyncTaskBacklog = counts.CountRegMatchs("SyncTaskBacklog", source, regexp.MustCompile(`^(\S+Z).*?Sync stat: incompleted = \[(.*)\], completed =.*`))
 	}()
 
 	go func() {
 		defer wg.Done()
-		MineWork = counts.CountRegMatchs(source, regexp.MustCompile(`^(\S+Z).*?Mine iterations statistics: scratch pad: (\d+), loading: (\d+), pad_mix: (\d+), hit: (\d+)`))
+		MineWork = counts.CountRegMatchs("MineWork", source, regexp.MustCompile(`^(\S+Z).*?Mine iterations statistics: scratch pad: (\d+), loading: (\d+), pad_mix: (\d+), hit: (\d+)`))
 	}()
 
 	wg.Wait()

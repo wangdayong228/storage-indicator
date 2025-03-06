@@ -13,8 +13,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func CountRegMatchs(logDir string, re *regexp.Regexp) int {
+func CountRegMatchs(indicatorName string, logDir string, re *regexp.Regexp) int {
 	counts := []int{}
+	sum := 0
 	err := filepath.Walk(logDir, func(path string, d fs.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -31,12 +32,14 @@ func CountRegMatchs(logDir string, re *regexp.Regexp) int {
 		if err != nil {
 			return err
 		}
-		logrus.WithField("path", path).Infof("count: %d", count)
+
 		counts = append(counts, count)
+		sum += count
+		logrus.WithField("indicator", indicatorName).WithField("path", path).WithField("count", count).WithField("sum", sum).Info("count 1 file completed")
 		return nil
 	})
 	if err != nil {
-		panic(err)
+		logrus.WithError(err).Error("count reg matchs error")
 	}
 	return lo.Sum(counts)
 }

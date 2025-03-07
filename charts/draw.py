@@ -179,8 +179,8 @@ def plot_mine_net_rate_minute_average(input_csv, chart_name, timestamp_col_index
 # 全天数据
 dir = "./out/hdd"
 # plot_box(f"{dir}/SyncProgressDiff.csv", "SyncProgressDiff", 0, 3)
-plot_box(f"{dir}/MemPoolRefreshRate.csv", "MemPoolRefreshRate", 1, 3, True)
-# plot_box_with_outliers(f"{dir}/TxSyncCompleteTimeCost.csv", "TxSyncCompleteTimeCost", 1, 3, True)
+# plot_box(f"{dir}/MemPoolRefreshRate.csv", "MemPoolRefreshRate", 1, 3, True)
+plot_box_with_outliers(f"{dir}/TxSyncCompleteTimeCost.csv", "TxSyncCompleteTimeCost", 1, 3, True)
 # plot_box(f"{dir}/SyncTaskBacklog.csv", "SyncTaskBacklog", 0, 1)
 # plot_mine_net_rate_minute_average(f"{dir}/MineWork.csv", "MineWork-LoadingRate", 0, "LoadingRate")
 

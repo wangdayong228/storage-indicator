@@ -2,18 +2,20 @@ package counts
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
 	"github.com/sirupsen/logrus"
 )
 
-func CountRegMatchs(indicatorName string, logDir string, re *regexp.Regexp) int {
+func CountRegMatchs(indicatorName string, logDir string, startTime time.Time, re *regexp.Regexp) int {
 	counts := []int{}
 	sum := 0
 	err := filepath.Walk(logDir, func(path string, d fs.FileInfo, err error) error {
@@ -23,6 +25,11 @@ func CountRegMatchs(indicatorName string, logDir string, re *regexp.Regexp) int 
 		if d.IsDir() {
 			return nil
 		}
+
+		if d.Name() < fmt.Sprintf("zgs.log.%s", startTime.Format("2006-01-02")) {
+			logrus.WithField("indicator", indicatorName).WithField("path", path).WithField("startTime", startTime.Format("2006-01-02")).Info("skip")
+			return nil
+		}
 		// read file
 		file, err := os.Open(path)
 		if err != nil {
@@ -30,7 +37,7 @@ func CountRegMatchs(indicatorName string, logDir string, re *regexp.Regexp) int 
 		}
 		count, err := match(file, re)
 		if err != nil {
-			return err
+			logrus.WithField("indicator", indicatorName).WithField("path", path).WithField("count", count).WithField("sum", sum).WithError(err).Error("count 1 file error")
 		}
 
 		counts = append(counts, count)

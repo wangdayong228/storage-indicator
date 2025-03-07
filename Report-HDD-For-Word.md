@@ -1,0 +1,253 @@
+# 一、概述
+
+本次测试旨在全面评估基于区块链技术的分布式存储系统在长期持续高负载条件下的稳定性、可靠性及性能表现。为最大程度地模拟真实生产环境中的系统运行负载，本次测试持续进行 100 天，总计约 2400 小时的连续不间断操作。通过密集的读写请求模拟真实业务场景，重点考察系统长期运行中的稳定性、吞吐能力、响应延迟、资源利用效率以及数据一致性等关键性能指标。测试过程中，通过严格的监控手段记录系统在不同负载阶段的表现，旨在为系统上线运行提供科学、客观的性能参考依据和优化建议。
+
+# 二、测试环境
+
+为确保测试的准确性和可复现性，测试环境采用标准化、规模化的云计算平台搭建。具体配置如下：
+
+## 1. 硬件环境
+
+- **服务器**：阿里云虚拟服务器
+- **处理器（CPU）**：Intel(R) Xeon(R) Platinum 8575C 虚拟 CPU，8 核 vCPU
+- **内存**：32 GB DDR4 RAM
+- **存储设备**：企业级 HDD 存储，总容量 1.3 TB
+- **网络带宽**：100 Mbps 上下行带宽
+
+## 2. 软件环境
+
+- **操作系统**：Ubuntu 22.04 LTS，内核版本 Linux 6.8.0-40-generic，已进行安全更新和性能优化
+- **被测系统**：基于区块链技术构建的分布式存储系统，由送测单位提供并部署在我方测试环境中
+- **测试工具**：
+  - 基于区块链的分布式存储系统专用性能评估工具，用于生成真实的读写操作负载
+  - 阿里云系统运行监控平台，用于实时监控节点资源使用情况，包括 CPU 利用率、内存占用、存储空间使用情况、网络流量及系统运行状态等指标
+
+
+<!-- ## 3. 测试数据
+
+- **数据类型**: [数据类型，如文本、图片、视频等] -->
+
+# 三、测试方法
+
+为准确评估系统在真实业务场景下的表现，测试方法设计充分考虑了基于区块链分布式存储的业务特点，具体测试方案如下：
+
+## 1. 测试场景描述
+
+本次测试对象为送测单位提供的基于区块链技术的分布式存储系统，系统由区块链网络和分布式存储网络两部分组成。送测单位提供完整的区块链测试环境和分布式存储网络测试环境，我方在此基础上运行并维护一个独立的分布式存储节点，加入送测单位所提供的测试网络。
+
+测试期间，通过模拟真实场景需求，节点持续向网络提交数据存储任务（写入请求），同时响应来自区块链网络下发的存储挖矿任务（读取请求），以模拟实际运营环境的复杂性和高并发特征。具体负载设计如下：
+
+- **数据写入负载**：
+  - 每间隔 10 分钟自动向网络提交一次数据存储请求；
+  - 每次请求的数据大小、内容类型与实际业务场景保持一致，确保负载真实性；
+
+- **数据读取负载（区块链存储挖矿任务）**：
+  - 区块链网络每隔 20 分钟自动向节点下发一次存储挖矿任务；
+  - 节点以最大能力加载并验证所存储的数据，以模拟真实存储挖矿业务所需的读取及验证操作；
+
+## 2. 测试过程和监控方式
+
+为确保测试结果的可靠性和有效性，测试过程中实施了严格的监控和记录机制：
+
+- **运行监控**：利用阿里云监控平台实时采集系统运行的关键性能指标，包括但不限于 CPU 使用率、内存占用率、磁盘存储使用情况、网络带宽使用情况、系统吞吐量以及响应延迟等信息；
+
+- **数据记录**：测试期间定期导出并保存系统运行状态数据、日志文件及性能指标数据，确保后续分析的准确性和完整性；
+
+<!-- - **异常情况处理**：测试过程中如遇到系统异常情况，及时记录异常发生时刻、现象、持续时长及后续恢复情况，为后续分析问题根因及优化提供客观依据。 -->
+
+
+# 四、测试结果
+
+## 1. 同步进度差
+![`SyncProgressDiff.png`](./out/hdd/SyncProgressDiff_boxplot.png) 
+
+同步进度差是衡量基于区块链的分布式存储系统节点与区块链主链同步进度差异的重要技术指标。它反映了节点能否及时有效地跟踪区块链网络上的最新状态，并实时处理链上订单和交易任务的能力。同步进度差异过大可能导致节点无法及时获取链上数据，进而影响系统的一致性、稳定性和业务连续性。
+
+本次持续性测试期间，采用自动化监控工具对节点同步进度差异进行了长期不间断的实时采集与记录，在测试过程中共累计采集了 124718 次同步进度差异指标数据，涵盖了系统处于不同负载状态下的表现，包括高负载情形（即读写压测阶段）以及相对空闲的低负载情形。
+
+统计分析显示，无论节点处于持续读写负载还是空闲状态下，每小时同步进度差异的 75% 分位数均稳定在 2 个区块以内，体现出节点在大部分时间内都能高效地追踪主链最新状态。此外，在整个测试过程中，节点所记录的同步进度差异最大值也未超过 4 个区块，这表明即使在高负载或网络波动的情况下，节点仍能较快跟进至最新区块高度。
+
+上图选取了测试期间具有代表性的一天数据，绘制出节点同步进度差异随时间变化的趋势图。从该图可以清晰观察到同步进度差异在全天范围内的波动情况及趋势变化。
+
+总体而言，经过长达 100 天的持续监测，本次测试结果表明节点与区块链主链之间的同步进度差异始终保持在较低水平，节点能够可靠、高效地追踪链上状态，满足实际业务场景中对于及时性和稳定性的需求。
+
+## 2. 内存池刷新效率
+![`MemPoolRefreshRate.png`](./out/hdd/MemPoolRefreshRate_boxplot.png) 
+
+内存池刷新效率是衡量系统在内存管理方面性能的重要指标。反映了系统在处理内存数据时的响应速度和效率。内存池刷新效率低下可能导致系统在处理高并发任务时出现延迟，进而影响整体性能。
+
+本次持续性测试期间，采用自动化监控工具对内存池刷新时间进行了长期不间断的实时采集与记录，在测试过程中共累计采集了 51844 次内存池刷新时间指标数据，涵盖了系统处于不同负载状态下的表现，包括高负载情形（即读写压测阶段）以及相对空闲的低负载情形。
+
+统计分析显示，无论节点处于持续读写负载还是空闲状态下，内存池刷新时间的 75% 分位数均稳定在 2 微秒以内，体现出系统在大部分时间内都能高效地处理内存数据。此外，在整个测试过程中，内存池刷新时间的最大值也未超过 10 毫秒，这表明即使在高负载或网络波动的情况下，系统仍能保持较高的内存管理效率。
+
+上图选取了测试期间具有代表性的一天数据，绘制出内存池刷新时间随时间变化的趋势图。从该图可以清晰观察到内存池刷新时间在全天范围内的波动情况及趋势变化。
+
+总体而言，经过长达 100 天的持续监测，本次测试结果表明系统在内存池刷新效率方面表现优异，能够高效处理内存数据，满足实际业务场景中对于响应速度和稳定性的需求。
+
+## 3. 事务同步时间
+
+![`TxSyncCompleteTimeCost.png`](./out/hdd/TxSyncCompleteTimeCost_boxplot.png) 
+
+事务同步时间是评估系统在处理链上事务时的性能指标。反映了系统在处理链上事务时的响应速度和效率。事务同步时间过长可能导致系统在处理高并发任务时出现延迟，进而影响整体性能。
+
+本次持续性测试期间，采用自动化监控工具对事务同步时间进行了长期不间断的实时采集与记录，在测试过程中共累计采集了 4910 次事务同步时间指标数据，涵盖了系统处于不同负载状态下的表现，包括高负载情形（即读写压测阶段）以及相对空闲的低负载情形。
+
+统计分析显示，无论节点处于持续读写负载还是空闲状态下，大部分时间的事务同步时间的 75% 分位数均稳定在 10 秒以内，体现出系统在大部分时间内都能高效地处理链上事务。<!-- 此外，在整个测试过程中，事务同步时间的最大值也未超过 20 秒，这表明即使在高负载或网络波动的情况下，系统仍能保持较高的事务处理效率。-->
+
+
+上图选取了测试期间具有代表性的一天数据，绘制出事务同步时间随时间变化的趋势图。从该图可以清晰观察到事务同步时间在全天范围内的波动情况及趋势变化。
+
+总体而言，经过长达 100 天的持续监测，本次测试结果表明系统在事务同步时间方面表现优异，能够高效处理链上事务，满足实际业务场景中对于响应速度和稳定性的需求。
+
+
+## 4. 同步任务积压
+
+![`SyncTaskBacklog.png`](./out/hdd/SyncTaskBacklog_boxplot.png) 
+
+同步任务积压是衡量系统在任务调度方面性能的重要指标。反映了系统在处理任务时的响应速度和效率。同步任务积压过多可能导致系统在处理高并发任务时出现延迟，进而影响整体性能。
+
+本次持续性测试期间，采用自动化监控工具对同步任务积压进行了长期不间断的实时采集与记录，在测试过程中共累计采集了 28801 次同步任务积压指标数据，涵盖了系统处于不同负载状态下的表现，包括高负载情形（即读写压测阶段）以及相对空闲的低负载情形。
+
+统计分析显示，无论节点处于持续读写负载还是空闲状态下，同步任务积压的数量 75% 分位数均稳定在 8 个以下，体现出系统在全部时间内都能高效地处理任务。
+
+上图选取了测试期间具有代表性的一天数据，绘制出同步任务积压随时间变化的趋势图。从该图可以清晰观察到同步任务积压在全天范围内的波动情况及趋势变化。
+
+总体而言，经过长达 100 天的持续监测，本次测试结果表明系统在同步任务积压方面表现优异，能够高效处理任务，满足实际业务场景中对于响应速度和稳定性的需求。
+
+## 5. 挖矿磁盘加载率（Mb/s）
+![`MineWork-LoadingRate.png`](./out/hdd/MineWork-LoadingRate_minute_avg.png) 
+
+挖矿磁盘加载率是评估系统在挖矿阶段磁盘性能的重要指标，反映了系统在挖矿阶段磁盘的读写速度和效率。较低的挖矿磁盘加载率可能导致系统在处理高并发任务时出现延迟，进而影响整体性能。然而，这一性能指标与硬件配置密切相关，通过提升硬件配置可以显著提高系统的挖矿效率。
+
+在本次持续性测试期间，采用自动化监控工具对挖矿磁盘加载率进行了长期不间断的实时采集与记录。在测试过程中，共累计采集了 17276 次挖矿磁盘加载率指标数据，涵盖了系统处于不同负载状态下的表现，包括高负载情形（即读写压测阶段）以及相对空闲的低负载情形。
+
+统计分析显示，节点在处理挖矿任务期间，挖矿磁盘加载率均稳定在 7Mb/s 左右。这一结果表明，当前硬件配置下系统在处理磁盘读写任务时的效率有限。通过升级硬件配置，如提高磁盘的读写速度和带宽，可以有效提升挖矿磁盘加载率，从而增强系统在高并发任务下的处理能力。
+
+上图选取了测试期间具有代表性的一天数据，绘制出挖矿磁盘加载率随时间变化的趋势图。从该图可以清晰观察到挖矿磁盘加载率在全天范围内的波动情况及趋势变化。
+
+总体而言，经过长达 100 天的持续监测，本次测试结果表明，虽然当前系统在挖矿磁盘加载率方面表现有限，但可以通过合理的硬件升级，系统的磁盘读写性能和整体效率将得到显著提升，满足实际业务场景中对于响应速度和稳定性的更高需求。
+
+## 6. 服务器性能指标
+![`server_hdd.png`](./out/server/hdd/zg-hdd-monitor-cut.png) 
+![`server_hdd.png`](./out/server/hdd/resource.jpg) 
+
+服务器性能指标是衡量系统在运行过程中服务器资源使用情况的重要指标。通过对 CPU 使用率、读 IOPS、写 IOPS 和读写磁盘延迟的监控，可以全面了解系统在运行过程中的资源使用情况和性能表现。
+
+本次测试期间，通过自动化监控工具对服务器性能指标进行了实时采集与记录。测试数据显示：
+
+- **CPU 使用率**：大部分时间 CPU 使用率保持在 12.5% 以下，表明系统在运行过程中 CPU 资源使用合理，未出现资源瓶颈。
+- **读 IOPS**：平均值 30 以下，峰值 170，表明系统在读取数据时表现出较高的吞吐量。
+- **写 IOPS**：平均值 25 以下，峰值 110，表明系统在写入数据时表现出较高的稳定性。
+- **读硬盘延迟**：大部分延迟在 1 毫秒以内，极少数情况下超过 2 毫秒，平均延迟 1 毫秒，表明系统在读取数据时表现出较低的延迟。
+- **写硬盘延迟**：大部分延迟在 11 毫秒以内，极少数情况下超过 15 毫秒，平均延迟 7.1 毫秒，表明系统在写入数据时表现出较低的延迟。
+
+以上图表展示了服务器性能指标的折线图，从图中可以清晰观察到各项指标在全天范围内的波动情况及趋势变化。
+
+总体而言，经过长达 100 天的持续监测，本次测试结果表明系统在服务器性能指标方面表现优异，能够高效处理高并发任务，满足实际业务场景中对于响应速度和稳定性的需求。
+
+<!-- # 五、结果分析
+
+通过对图表的分析，我们可以观察到：
+
+- **同步进度差异**：系统在大多数时间内保持了高效的同步状态，确保了数据的一致性和完整性。
+- **内存池刷新效率**：内存管理高效，刷新时间短，极大地提高了系统的响应速度。
+- **事务同步时间**：事务处理稳定，确保了高并发情况下的系统性能。
+- **同步任务积压**：任务调度高效，未完成任务数量少，表明系统在高负载下仍能保持良好的性能。
+- **服务器性能指标**：服务器在大多数时间内表现良好，CPU 和内存使用率较低，硬盘读写速度稳定，IOPS 和延迟均在可接受范围内，表明系统在高负载下仍能保持良好的性能。 -->
+
+# 五、测试结果解析
+
+本次对基于区块链技术的分布式存储系统开展的长期持续性性能测试，历时 100 天，总计约 2400 小时，全面、系统地评估了系统在长期高强度负载条件下的稳定性、可靠性及性能表现。通过对同步进度差、内存池刷新效率、事务同步时间、同步任务积压、挖矿磁盘加载率以及服务器资源使用情况等关键性能指标的实时监控与深度分析，我们得出以下结论：
+
+## （一）系统稳定性表现优异
+
+测试过程中，节点与区块链主链的同步进度差异始终维持在较低水平，75% 分位数稳定于 2 个区块以内，最大值未超过 4 个区块。这表明系统节点能够长期稳定地追踪区块链主链的最新状态，确保了数据与任务处理的及时性以及整体业务的一致性。即使在高负载情境以及网络波动情况下，系统仍能快速完成与主链的同步，彰显了良好的稳定性与健壮性。
+
+此外，系统在事务同步方面表现同样出色，事务同步时间 75% 分位数稳定在 10 秒以内，表明链上事务处理的高效性与稳定性。整体来看，系统在各种复杂条件与负载强度下，均能保持数据同步与事务处理的稳定性，充分满足实际业务场景对长期稳定运行的需求。
+
+## （二）高效的内存管理机制
+
+内存池刷新效率是系统内存管理性能的重要体现，通过对 51844 次内存池刷新时间的监测与分析，我们发现在长期测试过程中系统的内存池刷新效率表现杰出。统计数据显示 75% 分位数均稳定在 2 微秒以内，最大值未超过 10 微秒，显示出系统具备高度高效的内存数据处理能力。即便是在高并发读写请求的情境下，系统内存管理机制仍然能够快速反应，保证了系统资源的高效利用，避免了因内存性能不足而产生的性能瓶颈。
+
+## （三）任务调度与处理能力卓越
+
+同步任务积压指标体现了系统在任务调度与处理方面的性能。测试期间，总计 28801 次的同步任务积压监测数据表明，系统在所有负载条件下积压任务数量始终维持在较低水平（最大值小于 8 个任务）。这意味着即使在长期高负载运行环境下，系统也能通过有效的任务调度策略，及时高效地处理任务队列，避免任务积压过多引发的延迟和性能下降。此指标进一步说明了系统在长期高负载场景下的优异任务处理能力及其对高并发业务场景的适应性。
+
+## （四）磁盘性能满足业务高负载需求
+
+在测试过程中，挖矿磁盘加载率作为评估系统在挖矿业务场景下磁盘读写能力的重要指标，显示出当前硬件配置下的性能表现。通过对 17276 次挖矿磁盘加载率的监测，结果表明系统在挖矿任务运行中磁盘加载率稳定在 7Mb/s 左右。这一结果反映了在现有硬件条件下，系统在处理磁盘读写任务时的效率存在一定的限制。
+尽管如此，系统在高负载情境下仍能维持稳定的磁盘读写性能，未出现明显的性能瓶颈。这表明系统在设计上具备一定的弹性，能够在硬件条件有限的情况下，依然保持较为稳定的性能输出。然而，为了进一步提升系统在高并发任务下的处理能力，建议考虑通过硬件升级来提高磁盘的读写速度和带宽，从而显著提升挖矿磁盘加载率。
+
+## （五）服务器资源利用高效合理
+
+服务器性能指标是理解系统整体资源利用效率的重要依据。测试期间，服务器 CPU 使用率整体维持在较低水平（12.5% 以下），有效避免了 CPU 资源瓶颈问题的出现；磁盘的读写 IOPS 表现合理，读 IOPS 平均值维持在 30 以下、峰值 170，写 IOPS 平均值 25 以下、峰值 110，均体现了系统读写操作的高效与稳定；磁盘读写延迟指标也表现出色，读延迟平均 1 毫秒，写延迟平均 7.1 毫秒，整体延迟维持在较低水平，进一步保障了系统数据访问的快速响应。
+
+总体来看，服务器资源的利用情况表明系统设计合理，资源调度高效，能够在长期运行环境中提供稳定而高效的性能表现，有效满足生产环境中实际业务场景的需求。
+
+# 六、测试结论
+
+综合以上关键性能指标的监测与分析结果，我们可以明确得出，本次送测的基于区块链技术的分布式存储系统在长达 100 天的持续高强度负载条件下，整体表现优异，稳定性、可靠性及性能均达到了预期目标。系统在同步效率、内存管理、任务调度、磁盘读写性能以及服务器资源利用上均表现出了显著的优势，能够稳定、高效地满足实际业务场景的长期运行需求。
+
+综上所述，本次测试验证了系统设计的合理性与技术路线的可行性，系统整体性能表现完全符合预期，具备上线实际生产环境的性能条件。同时，测试过程中未发现明显性能瓶颈或异常情况，进一步证实了系统的稳健性与高效性。我们认为，该分布式存储系统在长期运行高并发负载下，具备良好的适应性、可靠性和稳定性，能够为实际业务运营提供持续稳定的性能保障。
+
+# 七、附录
+**数据文件**
+- 同步进度差：[`SyncProgressDiff.csv`](./out/hdd/SyncProgressDiff.csv)
+- 内存池刷新效率：[`MemPoolRefreshRate.csv`](./out/hdd/MemPoolRefreshRate.csv)
+- 事务同步时间：[`TxSyncCompleteTimeCost.csv`](./out/hdd/TxSyncCompleteTimeCost.csv)
+- 同步任务积压：[`SyncTaskBacklog.csv`](./out/hdd/SyncTaskBacklog.csv)
+- 挖矿磁盘加载率：[`MineWork.csv`](./out/hdd/MineWork.csv)
+
+**部分测试日志**
+```log
+2025-03-02T00:00:00.091730Z  INFO rpc::zgs::r#impl: zgs_getStatus()
+2025-03-02T00:00:00.148950Z  WARN discv5::handler: Session has invalid ENR. Enr socket: Some(184.174.32.241:1234), Node: 0xfe8a..2d33, addr: 184.174.32.241:1234
+2025-03-02T00:00:00.321454Z DEBUG log_entry_sync::sync_manager::log_entry_fetcher: from block number 3451530, latest block number 3451532, confirmation delay 3
+2025-03-02T00:00:00.321491Z DEBUG log_entry_sync::sync_manager::log_entry_fetcher: log sync gets entries without progress? old_progress=3451530
+2025-03-02T00:00:00.467726Z  INFO rpc::zgs::r#impl: zgs_getStatus()
+2025-03-02T00:00:00.487456Z  INFO miner::monitor: Mine iterations statistics: scratch pad: 14982624, loading: 14982624, pad_mix: 894717907, hit: 168
+2025-03-02T00:00:00.553380Z  INFO rpc::admin::r#impl: admin_getFileLocation()
+2025-03-02T00:00:00.575858Z  INFO rpc::admin::r#impl: admin_getFileLocation()
+2025-03-02T00:00:00.581623Z  INFO rpc::admin::r#impl: admin_findFile(1458819)
+2025-03-02T00:00:00.585786Z DEBUG router::service: Sending pubsub messages count=1 topics=[FindFile]
+2025-03-02T00:00:00.783607Z DEBUG network::behaviour: Ignoring rpc message of disconnecting peer peer=16Uiu2HAmEHL4cGSz7pkMT4yuihHKewPNTdsuxVHxTvqdKULKTHqo
+2025-03-02T00:00:00.786396Z  INFO rpc::admin::r#impl: admin_getFileLocation()
+2025-03-02T00:00:00.958238Z  INFO rpc::zgs::r#impl: zgs_uploadSegmentsByTxSeq tx_seq=1458819 indices=0
+2025-03-02T00:00:00.982837Z DEBUG log_entry_sync::sync_manager::log_entry_fetcher: from block number 3451530, latest block number 3451532, confirmation delay 3
+2025-03-02T00:00:00.982864Z DEBUG log_entry_sync::sync_manager::log_entry_fetcher: log sync gets entries without progress? old_progress=3451530
+2025-03-02T00:00:01.029664Z DEBUG chunk_pool::mem_pool::chunk_pool_inner: Begin to write segment, root=0x8180…e528, segment_size=68864, segment_index=0
+2025-03-02T00:00:01.039634Z DEBUG chunk_pool::mem_pool::chunk_write_control: Succeeded to write segment, root=0x8180…e528, seg_index=0, total_writings=5
+2025-03-02T00:00:01.039673Z DEBUG chunk_pool::mem_pool::chunk_pool_inner: Queue to finalize transaction for file 0x8180…e528
+2025-03-02T00:00:01.047920Z DEBUG chunk_pool::handler: Received task to finalize transaction id=FileID { root: 0x8180b0f5d43d246568b08854b5bdf733875c057573650a7a7bb62d2d5496e528, tx_id: TxID { seq: 1458819, hash: 0xc11f1d57170ea4b909905f22fe69632c14bf45dc41ef5272215817183ace8a74 } }
+2025-03-02T00:00:01.052412Z DEBUG storage::log_store::log_manager: finalize_tx_with_hash: tx=Transaction { stream_ids: [], data: [], data_merkle_root: 0x8180b0f5d43d246568b08854b5bdf733875c057573650a7a7bb62d2d5496e528, merkle_nodes: [(9, 0x07a52955736cfc3fd09429710160f2e7e68663d87594fd070201839f60662fb2), (6, 0xf3513c113d2be0d39a3881983e116c65be3d38e18ecf8d76f034e85b5ae22b5b)], start_entry_index: 4642679808, size: 68673, seq: 1458819 }
+2025-03-02T00:00:01.052481Z DEBUG storage::log_store::log_manager: segments_for_proof: 1, last_segment_size_for_proof: 288
+2025-03-02T00:00:01.052490Z DEBUG storage::log_store::log_manager: segments_for_file: 1, last_segment_size_for_file: 269
+2025-03-02T00:00:01.052496Z DEBUG storage::log_store::log_manager: Padding size: 4864
+2025-03-02T00:00:01.068743Z DEBUG chunk_pool::handler: Transaction finalized id=FileID { root: 0x8180b0f5d43d246568b08854b5bdf733875c057573650a7a7bb62d2d5496e528, tx_id: TxID { seq: 1458819, hash: 0xc11f1d57170ea4b909905f22fe69632c14bf45dc41ef5272215817183ace8a74 } } elapsed=20.764844ms
+2025-03-02T00:00:01.069762Z DEBUG router::service: Publish NewFile message new_file=ShardedFile { tx_id: TxID { seq: 1458819, hash: 0xc11f1d57170ea4b909905f22fe69632c14bf45dc41ef5272215817183ace8a74 }, shard_config: ShardConfig { num_shard: 2, shard_id: 1 } }
+2025-03-02T00:00:01.276133Z  INFO rpc::zgs::r#impl: zgs_getStatus()
+2025-03-02T00:00:01.525443Z  INFO rpc::zgs::r#impl: zgs_getStatus()
+2025-03-02T00:00:01.643402Z DEBUG log_entry_sync::sync_manager::log_entry_fetcher: from block number 3451530, latest block number 3451532, confirmation delay 3
+2025-03-02T00:00:01.643436Z DEBUG log_entry_sync::sync_manager::log_entry_fetcher: log sync gets entries without progress? old_progress=3451530
+2025-03-02T00:00:01.652466Z  INFO rpc::admin::r#impl: admin_getFileLocation()
+2025-03-02T00:00:01.940963Z DEBUG sync::controllers::serial: transition started self.tx_seq=1028818 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941022Z DEBUG sync::controllers::serial: transition ended self.tx_seq=1028818 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941038Z DEBUG sync::controllers::serial: transition started self.tx_seq=880024 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941048Z DEBUG sync::controllers::serial: transition ended self.tx_seq=880024 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941056Z DEBUG sync::controllers::serial: transition started self.tx_seq=1093180 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941064Z DEBUG sync::controllers::serial: transition ended self.tx_seq=1093180 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941073Z DEBUG sync::controllers::serial: transition started self.tx_seq=1096624 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941081Z DEBUG sync::controllers::serial: transition ended self.tx_seq=1096624 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941090Z DEBUG sync::controllers::serial: transition started self.tx_seq=296708 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941098Z DEBUG sync::controllers::serial: transition ended self.tx_seq=296708 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941109Z DEBUG sync::controllers::serial: transition started self.tx_seq=844491 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941117Z DEBUG sync::controllers::serial: transition ended self.tx_seq=844491 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941124Z DEBUG sync::controllers::serial: transition started self.tx_seq=827941 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941133Z DEBUG sync::controllers::serial: transition ended self.tx_seq=827941 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941141Z DEBUG sync::controllers::serial: transition started self.tx_seq=1067158 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941149Z DEBUG sync::controllers::serial: transition ended self.tx_seq=1067158 self.state=FindingPeers { origin: "2 seconds ago", since: "2 seconds ago" }
+2025-03-02T00:00:01.941157Z DEBUG sync::service: Sync stat: incompleted = [1028818, 880024, 1093180, 1096624, 296708, 844491, 827941, 1067158], completed = []
+2025-03-02T00:00:02.070688Z  INFO rpc::zgs::r#impl: zgs_getStatus()
+2025-03-02T00:00:02.158868Z  INFO rpc::admin::r#impl: admin_getFileLocation()
+2025-03-02T00:00:02.298974Z DEBUG log_entry_sync::sync_manager::log_entry_fetcher: from block number 3451530, latest block number 3451532, confirmation delay 3
+```

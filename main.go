@@ -8,6 +8,7 @@ import (
 	"os"
 	"regexp"
 	"sync"
+	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/wangdayong228/storage-indicator/counts"
@@ -20,13 +21,15 @@ func main() {
 	countFlag := flag.Bool("count", false, "执行计数操作")
 	sourceFlag := flag.String("source", "", "日志目录")
 	outFlag := flag.String("out", "", "输出目录")
+	startTimeFlag := flag.String("start", "", "开始时间")
 	flag.Parse()
 
 	logrus.WithFields(logrus.Fields{
-		"extractFlag": *extractFlag,
-		"countFlag":   *countFlag,
-		"sourceFlag":  *sourceFlag,
-		"outFlag":     *outFlag,
+		"extractFlag":   *extractFlag,
+		"countFlag":     *countFlag,
+		"sourceFlag":    *sourceFlag,
+		"outFlag":       *outFlag,
+		"startTimeFlag": *startTimeFlag,
 	}).Infof("main")
 	// 全天
 
@@ -37,8 +40,14 @@ func main() {
 		ExtarctIndicators(*sourceFlag, *outFlag)
 	} else if *countFlag {
 		// 这里可以添加 count 操作的实现
-		fmt.Println("执行计数操作")
-		CountIndicators(*sourceFlag)
+
+		startTime, err := time.Parse("2006-01-02", *startTimeFlag)
+		if err != nil {
+			logrus.WithError(err).Error("parse start time error")
+			os.Exit(1)
+		}
+		fmt.Printf("执行计数操作，开始时间：%s\n", startTime.Format("2006-01-02"))
+		CountIndicators(*sourceFlag, startTime)
 	} else {
 		fmt.Println("请指定一个操作: -extract 或 -count")
 	}
@@ -49,7 +58,7 @@ func main() {
 
 }
 
-func CountIndicators(source string) {
+func CountIndicators(source string, startTime time.Time) {
 	var (
 		SyncProgressDiffCount  int
 		MemPoolRefreshRate     int
@@ -63,27 +72,27 @@ func CountIndicators(source string) {
 
 	go func() {
 		defer wg.Done()
-		SyncProgressDiffCount = counts.CountRegMatchs("SyncProgressDiff", source, regexp.MustCompile(`^(\S+Z).*?from block number (\d+), latest block number (\d+)`))
+		SyncProgressDiffCount = counts.CountRegMatchs("SyncProgressDiff", source, startTime, regexp.MustCompile(`^(\S+Z).*?from block number (\d+), latest block number (\d+)`))
 	}()
 
 	go func() {
 		defer wg.Done()
-		MemPoolRefreshRate = counts.CountRegMatchs("MemPoolRefreshRate", source, regexp.MustCompile(`^(\S+Z).*?cached segments flushed to log store.*?tx_seq:(\d+)`))
+		MemPoolRefreshRate = counts.CountRegMatchs("MemPoolRefreshRate", source, startTime, regexp.MustCompile(`^(\S+Z).*?cached segments flushed to log store.*?tx_seq:(\d+)`))
 	}()
 
 	go func() {
 		defer wg.Done()
-		TxSyncCompleteTimeCost = counts.CountRegMatchs("TxSyncCompleteTimeCost", source, regexp.MustCompile(`^(\S+Z).*?Completed to sync file.* tx_seq=(\d+) sync_result=Completed`))
+		TxSyncCompleteTimeCost = counts.CountRegMatchs("TxSyncCompleteTimeCost", source, startTime, regexp.MustCompile(`^(\S+Z).*?Completed to sync file.* tx_seq=(\d+) sync_result=Completed`))
 	}()
 
 	go func() {
 		defer wg.Done()
-		SyncTaskBacklog = counts.CountRegMatchs("SyncTaskBacklog", source, regexp.MustCompile(`^(\S+Z).*?Sync stat: incompleted = \[(.*)\], completed =.*`))
+		SyncTaskBacklog = counts.CountRegMatchs("SyncTaskBacklog", source, startTime, regexp.MustCompile(`^(\S+Z).*?Sync stat: incompleted = \[(.*)\], completed =.*`))
 	}()
 
 	go func() {
 		defer wg.Done()
-		MineWork = counts.CountRegMatchs("MineWork", source, regexp.MustCompile(`^(\S+Z).*?Mine iterations statistics: scratch pad: (\d+), loading: (\d+), pad_mix: (\d+), hit: (\d+)`))
+		MineWork = counts.CountRegMatchs("MineWork", source, startTime, regexp.MustCompile(`^(\S+Z).*?Mine iterations statistics: scratch pad: (\d+), loading: (\d+), pad_mix: (\d+), hit: (\d+)`))
 	}()
 
 	wg.Wait()
